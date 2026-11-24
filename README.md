@@ -1,22 +1,24 @@
-# Diary App 9
+# Praktikum 09 — Diary App + REST API
 
-Diary App menggunakan Expo Router, Redux Toolkit, Fetch API, dan REST API Express untuk operasi CRUD ke MySQL.
+Repository ini berisi dua project sesuai struktur modul:
 
-## Menjalankan aplikasi
+- `diary-api/` — REST API Express dan koneksi MySQL.
+- `diary-app9/` — aplikasi React Native dengan Expo Router dan Redux Toolkit.
 
-1. Pastikan MySQL aktif dan database `diary_app` sudah tersedia.
-2. Jalankan API dari folder `diary-api` dengan `npm run dev`.
-3. Untuk Android Emulator, alamat API di `.env` mobile adalah `http://10.0.2.2:3000`. Untuk HP fisik, ganti dengan IPv4 laptop dan pastikan HP serta laptop berada pada Wi-Fi yang sama.
-4. Jalankan dari folder `diary-app9` dengan `npx expo start -c`, lalu buka project di Android Emulator.
+## Menyiapkan database dan API
 
-## Troubleshooting jaringan
+1. Jalankan isi `diary-api/schema.sql` di MySQL.
+2. Salin `diary-api/.env.example` menjadi `diary-api/.env`, lalu sesuaikan koneksi database.
+3. Dari folder `diary-api`, jalankan `npm install`, kemudian `npm run dev`.
+4. Pastikan `http://localhost:3000/health` menunjukkan database terhubung.
 
-**Gejala:** aplikasi menampilkan `Network request failed` atau tidak dapat mengambil diary.
+## Menjalankan aplikasi mobile
 
-**Penyebab umum:** aplikasi tidak dapat mencapai API lokal. `localhost` pada emulator merujuk ke emulator itu sendiri.
+1. Salin `diary-app9/.env.example` menjadi `diary-app9/.env`.
+2. Jalankan `npm install` dari folder `diary-app9`.
+3. Untuk Android Emulator, gunakan `EXPO_PUBLIC_API_URL=http://10.0.2.2:3000`. Untuk HP fisik, gunakan IPv4 laptop dan pastikan kedua perangkat berada di Wi-Fi yang sama.
+4. Dari folder `diary-app9`, jalankan `npx expo start -c`.
 
-**Perbaikan:** gunakan `http://10.0.2.2:3000` untuk Android Emulator atau IPv4 laptop untuk HP fisik. Pastikan backend aktif di port `3000`, server mendengarkan pada `0.0.0.0`, dan firewall Windows mengizinkan koneksi. Periksa endpoint health melalui browser emulator di `http://10.0.2.2:3000/health`.
+## Bukti praktikum
 
-## Bukti pengujian Postman
-
-Lampirkan screenshot respons untuk request GET semua diary, GET satu diary, POST, PUT, dan DELETE.
+Simpan screenshot Postman untuk GET semua data, GET berdasarkan ID, POST, PUT, dan DELETE. Uji juga pencarian (`GET /api/diaries?search=kata`) serta validasi judul kurang dari 3 karakter.
