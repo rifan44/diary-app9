@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -24,6 +24,17 @@ export default function HomeScreen() {
   const [searchText, setSearchText] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
   const [favoriteBusyId, setFavoriteBusyId] = useState<number | null>(null);
+  const visibleEntries = useMemo(() => {
+    const query = activeSearch.toLocaleLowerCase();
+    if (!query) return entries;
+
+    return entries.filter((entry) =>
+      [entry.title, entry.preview, entry.body]
+        .join(" ")
+        .toLocaleLowerCase()
+        .includes(query),
+    );
+  }, [activeSearch, entries]);
 
   useFocusEffect(
     useCallback(() => {
@@ -55,8 +66,9 @@ export default function HomeScreen() {
       await dispatch(
         editDiary({ id, data: { liked: !isLiked(liked) } }),
       ).unwrap();
-    } catch {
+    } catch (error) {
       Alert.alert("Error", "Gagal memperbarui favorit");
+      throw error;
     } finally {
       setFavoriteBusyId(null);
     }
@@ -105,7 +117,7 @@ export default function HomeScreen() {
       </View>
       {error ? <Text style={styles.errorBanner}>{error}</Text> : null}
       <FlatList
-        data={entries}
+        data={visibleEntries}
         keyExtractor={(item) => String(item.id)}
         refreshing={loading}
         onRefresh={() => dispatch(fetchDiaries(activeSearch))}

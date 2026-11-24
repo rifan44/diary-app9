@@ -1,10 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { DiaryEntry } from "../services/diaryApi";
+import FavoriteButton from "./FavoriteButton";
 
 type DiaryCardProps = {
   entry: DiaryEntry;
   onPress: () => void;
-  onToggleFavorite: () => void;
+  onToggleFavorite: () => void | Promise<void>;
   favoriteBusy?: boolean;
 };
 
@@ -30,17 +31,12 @@ export default function DiaryCard({
           <Text numberOfLines={2}>{entry.preview}</Text>
         </View>
       </Pressable>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={liked ? "Hapus dari favorit" : "Tambah ke favorit"}
+      <FavoriteButton
+        liked={liked}
         disabled={favoriteBusy}
         onPress={onToggleFavorite}
         style={styles.favoriteButton}
-      >
-        <Text style={[styles.favorite, liked && styles.favoriteActive]}>
-          {liked ? "♥" : "♡"}
-        </Text>
-      </Pressable>
+      />
     </View>
   );
 }
@@ -77,14 +73,8 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   favoriteButton: {
-    padding: 8,
+    width: 44,
+    height: 44,
     marginLeft: 8,
-  },
-  favorite: {
-    color: "#9CA3AF",
-    fontSize: 26,
-  },
-  favoriteActive: {
-    color: "#EF4444",
   },
 });

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { isLiked } from "../../src/components/DiaryCard";
+import FavoriteButton from "../../src/components/FavoriteButton";
 import {
   editDiary,
   removeDiary,
@@ -50,6 +51,23 @@ export default function DetailScreen() {
     ]);
   };
 
+  const toggleFavorite = async () => {
+    setSavingFavorite(true);
+    try {
+      await dispatch(
+        editDiary({ id: entry.id, data: { liked: !liked } }),
+      ).unwrap();
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        error instanceof Error ? error.message : "Gagal memperbarui favorit",
+      );
+      throw error;
+    } finally {
+      setSavingFavorite(false);
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.mood}>{entry.mood}</Text>
@@ -58,35 +76,19 @@ export default function DetailScreen() {
       <Text style={styles.createdAt}>Dibuat: {entry.created_at}</Text>
       <Text style={styles.body}>{entry.body}</Text>
 
-      <Pressable
+      <FavoriteButton
+        liked={liked}
         disabled={savingFavorite}
-        onPress={async () => {
-          setSavingFavorite(true);
-          try {
-            await dispatch(
-              editDiary({ id: entry.id, data: { liked: !liked } }),
-            ).unwrap();
-          } catch (error) {
-            Alert.alert(
-              "Error",
-              error instanceof Error
-                ? error.message
-                : "Gagal memperbarui favorit",
-            );
-          } finally {
-            setSavingFavorite(false);
-          }
-        }}
-        style={styles.favorite}
-      >
-        <Text style={styles.favoriteText}>
-          {savingFavorite
+        label={
+          savingFavorite
             ? "Menyimpan..."
             : liked
-              ? "♥ Hapus dari Favorit"
-              : "♡ Tambah ke Favorit"}
-        </Text>
-      </Pressable>
+              ? "Hapus dari Favorit"
+              : "Tambah ke Favorit"
+        }
+        onPress={toggleFavorite}
+        style={styles.favorite}
+      />
 
       <Pressable
         onPress={() =>
@@ -143,15 +145,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#2563EB",
   },
   favorite: {
+    minHeight: 52,
     padding: 14,
-    alignItems: "center",
     borderRadius: 14,
     borderWidth: 1,
     borderColor: "#E5E7EB",
-  },
-  favoriteText: {
-    color: "#111827",
-    fontWeight: "700",
   },
   delete: {
     padding: 14,

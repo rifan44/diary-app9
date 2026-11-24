@@ -32,8 +32,9 @@ export default function FavoritesScreen() {
     setFavoriteBusyId(id);
     try {
       await dispatch(editDiary({ id, data: { liked: false } })).unwrap();
-    } catch {
+    } catch (error) {
       Alert.alert("Error", "Gagal memperbarui favorit");
+      throw error;
     } finally {
       setFavoriteBusyId(null);
     }
